@@ -8,6 +8,8 @@ public class PlayerControllerX : MonoBehaviour
 
     public float floatForce;
     private float gravityModifier = 1.5f;
+    
+    private float upBounds = 16;
     private Rigidbody playerRb;
 
     public ParticleSystem explosionParticle;
@@ -18,11 +20,13 @@ public class PlayerControllerX : MonoBehaviour
     public AudioClip explodeSound;
 
 
+
     // Start is called before the first frame update
     void Start()
     {
         Physics.gravity *= gravityModifier;
         playerAudio = GetComponent<AudioSource>();
+        playerRb = GetComponent<Rigidbody>();
 
         // Apply a small upward force at the start of the game
         playerRb.AddForce(Vector3.up * 5, ForceMode.Impulse);
@@ -36,6 +40,10 @@ public class PlayerControllerX : MonoBehaviour
         if (Input.GetKey(KeyCode.Space) && !gameOver)
         {
             playerRb.AddForce(Vector3.up * floatForce);
+        }
+
+        if(transform.position.y > upBounds){
+            playerRb.velocity = new Vector3(playerRb.velocity.x, -2, playerRb.velocity.z);
         }
     }
 
@@ -58,6 +66,11 @@ public class PlayerControllerX : MonoBehaviour
             playerAudio.PlayOneShot(moneySound, 1.0f);
             Destroy(other.gameObject);
 
+        }
+
+        else if (other.gameObject.CompareTag("Ground")){
+            //bounce the ballon upwards 
+            playerRb.velocity = new Vector3(playerRb.velocity.x, 10, playerRb.velocity.z);
         }
 
     }
